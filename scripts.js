@@ -37,7 +37,7 @@ genres.appendChild(element);
 console.log(element)
 console.log(extract)
 
-for (const [id, name]; Object.entries(genres); ) {
+for (const [id name]; Object.entries(genres); ) {
     const elemet = document.createElement('option')
     element.value = id
     element.innerText = name;
