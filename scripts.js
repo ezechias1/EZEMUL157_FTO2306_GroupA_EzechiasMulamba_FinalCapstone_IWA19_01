@@ -1,8 +1,5 @@
 import { BOOKS_PER_PAGE, books, authors, genres } from './data.js';
 
-
-
-
 const documentBody = document.querySelector('body');
 const matches = books
 let page = 1;
@@ -60,12 +57,10 @@ let dataImage = documentBody.getAttribute('[data-list-image]');
 
 let listItemsDiv = document.querySelector('.list__items')
 
-// This is really redundant error handling, I'd suggest, maybe setting up an error 
-// HTML that would display.
-// You can attach some html text using `` and then assign it to listItemsDiv
-// like "itemsListDiv.innerHTML += `${error}` "
+
+
 if (!books && !Array.isArray(books)) {
-	//something along these lines
+	
 	listItemsDiv.innerHtml += `<div style="display:flex;align-items:center:justify-content:center;"></div>Source required`;
 	throw new Error('Source required')
 }
@@ -97,8 +92,7 @@ for (let item of extracted) {
 	// need to figure out the create preview function.
 	// could most probably be a function that takes in the extracted list
 	// mapped over and returned into the cards.
-	// I actually did it for you quickly on line 62
-	const previewCardContainer = document.createElement('button')
+    const previewCardContainer = document.createElement('button')
 	const preview = createPreview({
 		...item
 	})
@@ -144,3 +138,4 @@ function searchForm(input) {
 
 if (titleMatch && authorMatch && genreMatch) result.push(book)
  }
+ 
