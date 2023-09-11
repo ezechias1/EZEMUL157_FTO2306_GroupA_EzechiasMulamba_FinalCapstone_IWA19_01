@@ -1,4 +1,6 @@
-import { BOOKS_PER_PAGE, books, authors, genres, } from './data.js';
+import { BOOKS_PER_PAGE, books, authors, genres } from './data.js';
+
+
 
 
 const documentBody = document.querySelector('body');
@@ -16,7 +18,7 @@ let genre = document.createDocumentFragment()
 let element = document.createElement('option')
 let result;
 let extracted = books.slice(0, 36);
-const fragment = document.createDocumentFragment()
+var fragment = document.createDocumentFragment()
 
 
 
@@ -36,8 +38,9 @@ let dataSearchCancel = documentBody.querySelector('[data-search-cancel]');
 let dataSettingsCancel = documentBody.querySelector('[data-settings-cancel]');
 //search by genre button
 
-
-const dataSearchGenres = documentBody.querySelector('[data-search-genres]');
+// You can go to the html and find the rest ;) I already declared them for you,
+// and there are some examples of how to use them as well.
+let dataSearchGenres = documentBody.querySelector('[data-search-genres]');
 let dataSearchAuthors = documentBody.querySelector('[data-search-authors]');
 let dataSettingTheme = documentBody.querySelector('[data-settings-theme]');
 let dataHeaderSearch = documentBody.querySelector('[data-header-search]');
@@ -57,11 +60,12 @@ let dataImage = documentBody.getAttribute('[data-list-image]');
 
 let listItemsDiv = document.querySelector('.list__items')
 
-// This is really redundant error handling, setting up an error 
+// This is really redundant error handling, I'd suggest, maybe setting up an error 
 // HTML that would display.
-// 
+// You can attach some html text using `` and then assign it to listItemsDiv
+// like "itemsListDiv.innerHTML += `${error}` "
 if (!books && !Array.isArray(books)) {
-	
+	//something along these lines
 	listItemsDiv.innerHtml += `<div style="display:flex;align-items:center:justify-content:center;"></div>Source required`;
 	throw new Error('Source required')
 }
@@ -76,8 +80,7 @@ const createPreview = (items) => {
 
 		//this is a simple lookup which will find the author
 		// notice in the Author object in your data file, is a GUID
-		// It matches the same as in the book.author ID, we can do a lookup and find the 
-		// author that matches the ID
+		// It matches the same as in the book.author ID,
 		return `
 			<img class="preview__image" src="${item.image}"/>
 				<div class="preview__info">
@@ -91,7 +94,10 @@ const createPreview = (items) => {
 }
 
 for (let item of extracted) {
-	
+	// need to figure out the create preview function.
+	// could most probably be a function that takes in the extracted list
+	// mapped over and returned into the cards.
+	// I actually did it for you quickly on line 62
 	const previewCardContainer = document.createElement('button')
 	const preview = createPreview({
 		...item
@@ -106,163 +112,21 @@ for (let item of extracted) {
 	listItemsDiv.appendChild(previewCardContainer)
 }
 
-// Something along these lines //
-
-
-dataItems.appendChild(fragment)
-
-
-element.value = 'any'
-element = 'All Genres'
-genres.appendChild(element)
-
-for ([id, name]; Object.entries(genres); i++) {
-    document.createElement('option')
-    element.value = value
-    element.innerText = text
-    genres.appendChild(element)
-}
-
-dataSearchGenres.appendChild(genres)
-
-authors = document.createDocumentFragment()
-element = document.createElement('option')
-element.value = 'any'
-element.innerText = 'All Authors'
-authors.appendChild(element)
-
-for ([id, name]; Object.entries(authors); id++) {
-    document.createElement('option')
-    element.value = value
-    element = text
-    authors.appendChild(element)
-}
-
- dataSearchAuthors.appendChild(authors)
-
-dataSettingTheme.value === window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'
-
 
 dataButton.innerHTML = `Show more ${(books.length - BOOKS_PER_PAGE)}`
 dataButton.disabled = !(matches.length - [page * BOOKS_PER_PAGE] > 0);
-dataButton.innerHTML = `
-<span>Show more</span>
-<span class="list__remaining"> (${matches.length - [page * BOOKS_PER_PAGE] > 0 ? matches.length - [page * BOOKS_PER_PAGE] : 0})</span>`;
-
-
+// 
 dataHeaderSearch.addEventListener('click', () => {
 	dataSearchOverlay.open = true
 });
 dataSearchCancel.addEventListener('click', () => dataSearchOverlay.open = false);
 
 
-dataSettingsForm.onSubmit() = function () { actions.settings.submit }
-dataListClose.addEventListener('click', () => dataListActive.open = false)
-
-dataButton.addEventListener('click', (e) => {
-	console.log(e.currentTarget)
-	document.querySelector([dataItems]).appendChild(createPreviewsFragment(matches, page * BOOKS_PER_PAGE, (page + 1) * BOOKS_PER_PAGE))
-	actions.list.updateRemaining()
-	page = page + 1
-})
 
 
-dataHeaderSearch.addEventListener('click', () => {
-    dataSearchOverlay.open === true;
-    data - search - title.focus();
-})
-
-
-dataSearchForm.AddEventListener('click', () => searchForm({}));
-
-
-
-if (display.length < 1) {
-    dataListMessage.class.add('list__message_show')
-} else {
-    data - list - message.class.remove('list__message_show')
-}
-
-
-dataItems.innerHTML = ''
-extracted = source.slice(range[0], range[1])
-
- function createPreview(props) {
-    for (let { author, image, title, id } of extracted) {
-        const { author, authorId, id, image, title } = props
-        console.log(author)
-
-        element = document.createElement('button')
-        element.classList = 'preview'
-        element.setAttribute('data-preview', id)
-
-        element.innerHTML = /* html */ `
-                <img
-                    class="preview__image"
-                    src="${image}"
-                />
-
-                <div class="preview__info">
-                    <h3 class="preview__title">${title}</h3>
-                    <div class="preview__author">${authors[authorId]}</div>
-                </div>
-            `
-
-        fragment.appendChild(element)
-    }
-}
-
-
-dataItems.appendChild(fragments)
-initial === matches.length - [page * BOOKS_PER_PAGE]
-remaining === hasRemaining ? initial : 0
-dataButton.disabled = initial > 0
-
-dataButton.innerHTML = `
-        <span>Show more</span>
-        <span class="list__remaining"> (${remaining})</span>
-    `
-
-window.scrollTo({ top: 0, behavior: 'smooth' });
-dataSearchOverlay.open = false
-
-
-dataSettingsOverlay.onSubmit() = function () {
-    preventDefault()
-    const formData = new FormData(event.target)
-    const result = Object.fromEntries(formData)
-    document.documentElement.style.setProperty('--color-dark', css[result.theme].dark);
-    document.documentElement.style.setProperty('--color-light', css[result.theme].light);
-    dataSettingsOverlay.open === false
-}
-
-
-dataItems.addEventListener('click', (event) => {
-    pathArray = Array.from(event.path || event.composedPath())
-    active;
-
-    for (node; pathArray; i++) {
-        if (active) break;
-        const previewId = node?.dataset?.preview
-
-        for (const singleBook of books) {
-            if (singleBook.id === id) active = singleBook
-        }
-    }
-
-    if (!active) return
-    dataListActive.open === true
-    dataBlur + dataImage === active.image
-    dataTitle = active.title
-
-    dataSubtitle = `${authors[active.author]} (${Date(active.published).year})`
-    dataDescription = active.description
-})
-
-
-// making the search function
-function searchForm(event) {
-	preventDefault()
+// Search is pretty basic
+function searchForm(input) {
+	preventDefault()// tells the chrome not to reload the page 
 	const formData = new FormData(event.target)
 	const filters = Object.fromEntries(formData)
 	result = []
@@ -276,6 +140,7 @@ function searchForm(event) {
 			for (genre; books.genres; i++) { if (singleGenre === filters.genre) { genreMatch === true } }
 		}
 	}
+    
 
-	if (titleMatch && authorMatch && genreMatch) result.push(book)
-}
+if (titleMatch && authorMatch && genreMatch) result.push(book)
+ }
