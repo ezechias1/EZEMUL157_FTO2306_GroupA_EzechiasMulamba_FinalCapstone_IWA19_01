@@ -8,7 +8,7 @@ let day = {
 	light: '255, 255, 255',
 }
 let night = {
-	dark: '255, 255, 255',
+	dark: '255, 255, 255', 
 	light: '10, 10, 20',
 }
 let genre = document.createDocumentFragment()
@@ -35,8 +35,7 @@ let dataSearchCancel = documentBody.querySelector('[data-search-cancel]');
 let dataSettingsCancel = documentBody.querySelector('[data-settings-cancel]');
 //search by genre button
 
-// You can go to the html and find the rest ;) I already declared them for you,
-// and there are some examples of how to use them as well.
+
 let dataSearchGenres = documentBody.querySelector('[data-search-genres]');
 let dataSearchAuthors = documentBody.querySelector('[data-search-authors]');
 let dataSettingTheme = documentBody.querySelector('[data-settings-theme]');
