@@ -1,140 +1,315 @@
-import { BOOKS_PER_PAGE, books, authors, genres } from './data.js';
-
-const documentBody = document.querySelector('body');
-const matches = books
+import { BOOKS_PER_PAGE, books, authors, genres } from "./data.js";
+//Tests if books exist
+const matches = books;
 let page = 1;
-let day = {
-	dark: '10, 10, 20',
-	light: '255, 255, 255',
-}
-let night = {
-	dark: '255, 255, 255', 
-	light: '10, 10, 20',
-}
-let genre = document.createDocumentFragment()
-let element = document.createElement('option')
-let result;
-let extracted = books.slice(0, 36);
-var fragment = document.createDocumentFragment()
-
-
-
-window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-	? `${night}` | `${day}`
-	: documentBody.style.setProperty('--color-dark', night)
-	| documentBody.style.setProperty('--color-light', day);
-
-//data attributes - not sure if LET is appropriate - assumption based on lower down reassigning
-//The div which contains all your card items preview
-let dataItems = documentBody.querySelector('[data-list-item]');
-//bottom button
-let dataButton = documentBody.querySelector('[data-list-button]');
-//cancel button in search dialog
-let dataSearchCancel = documentBody.querySelector('[data-search-cancel]');
-//cancel button in settings
-let dataSettingsCancel = documentBody.querySelector('[data-settings-cancel]');
-//search by genre button
-
-
-let dataSearchGenres = documentBody.querySelector('[data-search-genres]');
-let dataSearchAuthors = documentBody.querySelector('[data-search-authors]');
-let dataSettingTheme = documentBody.querySelector('[data-settings-theme]');
-let dataHeaderSearch = documentBody.querySelector('[data-header-search]');
-let dataSearchOverlay = documentBody.querySelector('[data-search-overlay]');
-let dataSettingsForm = documentBody.querySelector('[data-settings-form]');
-let dataListClose = documentBody.querySelector('[data-list-close]');
-let dataListActive = documentBody.getAttribute('[ data-list-active]');
-let dataSearchForm = documentBody.getAttribute('[data-search-form]');
-let dataSettingsOverlay = documentBody.getAttribute('[data-settings-overlay]');
-let dataSubtitle = documentBody.getAttribute('[data-list-subtitle]');
-let dataDescription = documentBody.getAttribute('[data-list-description]');
-let dataListMessage = documentBody.getAttribute('[data-list-message]');
-let dataTitle = documentBody.getAttribute('[data-list-title]');
-let dataBlur = documentBody.getAttribute('[data-list-blur]');
-let dataImage = documentBody.getAttribute('[data-list-image]');
-
-
-let listItemsDiv = document.querySelector('.list__items')
-
-
+const range = [0, BOOKS_PER_PAGE];
 
 if (!books && !Array.isArray(books)) {
-	
-	listItemsDiv.innerHtml += `<div style="display:flex;align-items:center:justify-content:center;"></div>Source required`;
-	throw new Error('Source required')
-}
-if (!extracted && extracted.length < 2) {
-	throw new Error('Range must be an array with two numbers')
+  throw new Error("Source required");
 }
 
-// this returns the card item you see in the DOM, it's supposed to be a clickable button
-// which opens a modal/dialog
-const createPreview = (items) => {
-	const mappedList = [items].map(item => {
-
-		//this is a simple lookup which will find the author
-		// notice in the Author object in your data file, is a GUID
-		// It matches the same as in the book.author ID,
-		return `
-			<img class="preview__image" src="${item.image}"/>
-				<div class="preview__info">
-				    <h3 class="preview__title">${item.title}</h3>
-				    <div class="preview__author">${authors[item.author]}</div>
-				</div>
-			`
-	})
-
-	return mappedList;
+if (!range && range.length === 2) {
+  throw new Error("Range must be an array with two numbers");
 }
 
-for (let item of extracted) {
-	// need to figure out the create preview function.
-	// could most probably be a function that takes in the extracted list
-	// mapped over and returned into the cards.
-    const previewCardContainer = document.createElement('button')
-	const preview = createPreview({
-		...item
-	})
+const elements = {
+  list: {
+    items: document.querySelector("[data-list-items]"),
+    message: document.querySelector("[data-list-message]"),
+    button: document.querySelector("[data-list-button]"),
+    active: document.querySelector("[data-list-active]"),
+    blur: document.querySelector("[data-list-blur]"),
+    image: document.querySelector("[data-list-image]"),
+    title: document.querySelector("[data-list-title]"),
+    subtitle: document.querySelector("[data-list-subtitle]"),
+    description: document.querySelector("[data-list-description]"),
+    close: document.querySelector("[data-list-close]"),
+  },
+  search: {
+    header: document.querySelector("[data-header-search]"),
+    overlay: document.querySelector("[data-search-overlay]"),
+    form: document.querySelector("[data-search-form]"),
+    title: document.querySelector("[data-search-title]"),
+    genres: document.querySelector("[data-search-genres]"),
+    authors: document.querySelector("[data-search-authors]"),
+    cancel: document.querySelector("[data-search-cancel]"),
+  },
+  settings: {
+    header: document.querySelector("[data-header-settings]"),
+    overlay: document.querySelector("[data-settings-overlay]"),
+    form: document.querySelector("[data-settings-form]"),
+    theme: document.querySelector("[data-settings-theme]"),
+    cancel: document.querySelector("[data-settings-cancel]"),
+  },
+}; 
 
-	previewCardContainer.classList = 'preview'
-	previewCardContainer.setAttribute('data-preview', item.id)
-	previewCardContainer.innerHTML += preview
+//Displays books
+const fragment = document.createDocumentFragment();
+const extracted = matches.slice(0, 36);
 
-	console.log(item)
+//Preview books & Index
+function createPreview(preview, index, bookTotal) {
+  const { author: authorId, id, image, title } = preview;
 
-	listItemsDiv.appendChild(previewCardContainer)
+  const showPreview = document.createElement("button");
+  showPreview.classList = "preview";
+  showPreview.setAttribute("data-preview", id);
+  showPreview.innerHTML = /*html */ `
+<img class="preview__image" src="${image}" />
+<div class="preview__info">
+<h3 class="preview__title">${title}</h3>
+<div class="preview__author">${authors[authorId]}</div>
+<div class="preview__index">Book ${index + 1} of ${bookTotal}</div>
+</div> `;
+  return showPreview;
 }
 
+function loadBooks() {
+  const startIndex = (page - 1) * BOOKS_PER_PAGE;
+  const endIndex = startIndex + BOOKS_PER_PAGE;
+  const bookFragment = document.createDocumentFragment();
+  const bookExtracted = matches.slice(startIndex, endIndex);
 
-dataButton.innerHTML = `Show more ${(books.length - BOOKS_PER_PAGE)}`
-dataButton.disabled = !(matches.length - [page * BOOKS_PER_PAGE] > 0);
-// 
-dataHeaderSearch.addEventListener('click', () => {
-	dataSearchOverlay.open = true
+  for (let i = 0; i < bookExtracted.length; i++) {
+    const preview = createPreview(
+      bookExtracted[i],
+      startIndex + i,
+      matches.length
+    );
+
+    bookFragment.appendChild(preview);
+  }
+  elements.list.items.appendChild(bookFragment);
+  const remainingBooks = matches.length - page * BOOKS_PER_PAGE;
+  elements.list.button.innerHTML = /* html */ `
+<span> Show more </span>
+<span class = "list__remaining"> (${
+    remainingBooks > 0 ? remainingBooks : 0
+  }) </span>
+ `;
+  elements.list.button.disabled = remainingBooks <= 0;
+}
+
+loadBooks();
+
+elements.list.button.addEventListener("click", () => {
+  page++;
+  loadBooks();
 });
-dataSearchCancel.addEventListener('click', () => dataSearchOverlay.open = false);
+
+//Opens book summary
+
+function handleListItemClick(event) {
+  elements.list.active.showModal();
+
+  const pathArray = Array.from(event.path || event.composedPath());
+  let active;
+
+  for (const node of pathArray) {
+    if (active) break;
+    const id = node?.dataset.preview;
+
+    if (id) {
+      const matchingBook = matches.find((book) => book.id === id);
+      if (matchingBook) {
+        active = matchingBook;
+        break;
+      }
+    }
+  }
+
+  if (!active) {
+    return;
+  }
+
+  elements.list.image.src = active.image;
+  elements.list.blur.src = active.image;
+  elements.list.title.textContent = active.title;
+  const date = new Date(active.published);
+  const published = date.getFullYear();
+  elements.list.subtitle.textContent = `${authors[active.author]} (${published})`;
+  elements.list.description.textContent = active.description;
+;}
+
+function handleCloseButtonClick() {
+  elements.list.active.close();
+}
+
+elements.list.items.addEventListener("click", handleListItemClick);
+elements.list.close.addEventListener("click", handleCloseButtonClick);
+
+//Search
+function handleHeaderClick () {
+  elements.search.overlay.showModal();
+  elements.search.title.focus();
+}
+
+elements.search.header.addEventListener("click", handleHeaderClick)
+
+//Populate Genres on Search
+
+function populateGenres() {
+  const genresFragment = document.createDocumentFragment();
+  const allGenresElement = createGenreOption("any", "All Genres");
+  genresFragment.appendChild(allGenresElement);
+
+  for (const [id, genre] of Object.entries(genres)) {
+    const genreElement = createGenreOption(id, genre);
+    genresFragment.appendChild(genreElement);
+  }
+  elements.search.genres.appendChild(genresFragment);
+}
+
+function createGenreOption(value, text) {
+  const genreElement = document.createElement("option");
+  genreElement.value = value;
+  genreElement.innerText = text;
+  return genreElement;
+}
+
+populateGenres();
 
 
+//Populate Authors on Search
+function populateAuthors() {
+  const authorsFragment = document.createDocumentFragment();
+
+  const allAuthorsElement = createAuthorOption("any", "All Authors");
+  authorsFragment.appendChild(allAuthorsElement);
+
+  for (const [id, author] of Object.entries(authors)) {
+    const authorElement = createAuthorOption(id, author);
+    authorsFragment.appendChild(authorElement);
+  }
+
+  elements.search.authors.appendChild(authorsFragment);
+}
+
+function createAuthorOption(value, text) {
+  const authorElement = document.createElement("option");
+  authorElement.value = value;
+  authorElement.innerText = text;
+  return authorElement;
+}
+
+populateAuthors();
 
 
-// Search is pretty basic
-function searchForm(input) {
-	preventDefault()// tells the chrome not to reload the page 
-	const formData = new FormData(event.target)
-	const filters = Object.fromEntries(formData)
-	result = []
+//Search More
 
-	for (book; booksList; i++) {
-		titleMatch = filters.title.trim() = '' && books.title.toLowerCase().includes[filters.title.toLowerCase()]
-		authorMatch = filters.author = 'any' || books.author === filters.author
+elements.search.form.addEventListener("submit", handleFormSubmission);
+function handleFormSubmission(event) {
+  event.preventDefault();
+  const getData = new FormData(event.target);
+  const filters = Object.fromEntries(getData);
+  const result = filterBooks(filters);
+  updateBookList(result);
+}
 
-		{
-			genreMatch = filters.genre = 'any'
-			for (genre; books.genres; i++) { if (singleGenre === filters.genre) { genreMatch === true } }
-		}
-	}
-    
+function filterBooks(filters) {
+  const filteredBooks = [];
 
-if (titleMatch && authorMatch && genreMatch) result.push(book)
- }
- 
+  for (const book of books) {
+    const titleMatch =
+      filters.title !== "" &&
+      book.title
+        .toLocaleLowerCase()
+        .includes(filters.title.toLocaleLowerCase());
+    const genreMatch =
+      filters.genre !== "any" && book.genres.includes(filters.genre);
+    const authorMatch =
+      filters.author !== "any" &&
+      book.author
+        .toLocaleLowerCase()
+        .includes(filters.author.toLocaleLowerCase());
+    if (titleMatch || authorMatch || genreMatch) {
+      filteredBooks.push(book);
+    }
+  }
+
+  return filteredBooks;
+}
+
+function updateBookList(result) {
+  if (result.length === 0) {
+    clearBookList();
+  } else {
+    clearBookList();
+    const searchStartIndex = (page - 1) * BOOKS_PER_PAGE;
+    const searchEndIndex = searchStartIndex + BOOKS_PER_PAGE;
+    const searchBookExtracted = result.slice(searchStartIndex, searchEndIndex);
+    const searchBookFragment = createBookPreviewFragment(searchBookExtracted);
+    elements.list.items.appendChild(searchBookFragment);
+    const remainingBooks = result.length - page * BOOKS_PER_PAGE;
+    elements.list.button.disabled = remainingBooks <= 0;
+  }
+
+  resetFormAndOverlay();
+}
+
+function createBookPreviewFragment(bookArray) {
+  const searchBookFragment = document.createDocumentFragment();
+  for (const preview of bookArray) {
+    const showPreview = createPreview(preview);
+    searchBookFragment.appendChild(showPreview);
+  }
+
+  return searchBookFragment;
+}
+
+function clearBookList() {
+  elements.list.items.innerHTML = "";
+  elements.list.button.disabled = true;
+  elements.list.message.classList.add("list__message_show");
+}
+
+function resetFormAndOverlay() {
+  elements.search.overlay.close();
+  elements.search.form.reset();
+}
+
+elements.search.cancel.addEventListener("click", () => {
+  elements.search.overlay.close();
+});
+
+
+//Night & Day Theme
+
+const theme = {
+	day: {
+	  dark: "10, 10, 20",
+	  light: "255, 255, 255",
+	},
+	night: {
+	  dark: "255, 255, 255",
+	  light: "10, 10, 20",
+	},
+  }; 
+  
+  const openDataSettings = () => {
+	elements.settings.overlay.showModal();
+  }; 
+  
+  const applyTheme = (result) => {
+	document.documentElement.style.setProperty("--color-dark", theme[result.theme].dark);
+	document.documentElement.style.setProperty("--color-light", theme[result.theme].light);
+  };
+  
+  const closeDataSettings = () => {
+	elements.settings.overlay.close();
+  }; 
+  
+  elements.settings.header.addEventListener("click", openDataSettings);
+  
+  elements.settings.form.addEventListener("submit", (event) => {
+	event.preventDefault();
+  
+	const formData = new FormData(elements.settings.form);
+	const result = Object.fromEntries(formData);
+  
+	applyTheme(result);
+	closeDataSettings();
+  });
+  
+  elements.settings.cancel.addEventListener("click", closeDataSettings);
+  
