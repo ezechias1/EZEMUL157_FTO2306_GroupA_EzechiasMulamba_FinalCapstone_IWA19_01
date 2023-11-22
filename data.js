@@ -25411,5 +25411,4 @@ const books = [
   }
 ]
 
-
 export { BOOKS_PER_PAGE, authors, genres, books }
